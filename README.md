@@ -1,2 +1,3 @@
-# locale-value-object
+# Locale Value Object
+
 A simple locale value object.
