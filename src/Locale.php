@@ -2,6 +2,9 @@
 
 namespace RicardoKovalski\Locale;
 
+use RicardoKovalski\Locale\Exceptions\FormatValueException;
+use RicardoKovalski\Locale\Exceptions\UnknownFormatException;
+
 final class Locale
 {
     private $languageCode;

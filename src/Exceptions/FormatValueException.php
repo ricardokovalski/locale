@@ -1,6 +1,6 @@
 <?php
 
-namespace RicardoKovalski\Locale;
+namespace RicardoKovalski\Locale\Exceptions;
 
 use InvalidArgumentException;
 
