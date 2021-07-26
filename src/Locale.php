@@ -4,61 +4,102 @@ namespace RicardoKovalski\Locale;
 
 use RicardoKovalski\Locale\Exceptions\FormatValueException;
 use RicardoKovalski\Locale\Exceptions\UnknownFormatException;
+use RicardoKovalski\Locale\Mediator\CountryCodeColleague;
+use RicardoKovalski\Locale\Mediator\LanguageCodeColleague;
+use RicardoKovalski\Locale\Mediator\LocaleMediator;
 
+/**
+ * Class Locale
+ * @package RicardoKovalski\Locale
+ */
 final class Locale
 {
+    /**
+     * @var string
+     */
     private $languageCode;
 
+    /**
+     * @var string
+     */
     private $countryCode;
 
+    /**
+     * @var LocaleMediator
+     */
+    private $mediator;
+
+    /**
+     * Locale constructor.
+     * @param $languageCode
+     * @param $countryCode
+     */
     private function __construct($languageCode, $countryCode)
     {
         $this->languageCode = strtolower($languageCode);
         $this->countryCode = strtoupper($countryCode);
+        $this->mediator = new LocaleMediator(
+            new LanguageCodeColleague($this->languageCode),
+            new CountryCodeColleague($this->countryCode)
+        );
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return sprintf('%s_%s', $this->languageCode, $this->countryCode);
     }
 
+    /**
+     * @return string
+     */
     public function getCountryCode()
     {
         return $this->countryCode;
     }
 
+    /**
+     * @return string
+     */
     public function getLanguageCode()
     {
         return $this->languageCode;
     }
 
-    public function isSameValueAs(Locale $other)
+    /**
+     * @param Locale $object
+     * @return bool
+     */
+    public function isSameValueAs(Locale $object)
     {
-        return $this->isLanguageCodeSameValueAs($other) && $this->isCountryCodeSameValueAs($other);
+        return $this->getLanguageCode() == $object->getLanguageCode() &&
+            $this->getCountryCode() == $object->getCountryCode();
     }
 
-    public function isLanguageCodeSameValueAs(Locale $other)
-    {
-        return $this->getLanguageCode() == $other->getLanguageCode();
-    }
-
-    public function isCountryCodeSameValueAs(Locale $other)
-    {
-        return $this->getCountryCode() == $other->getCountryCode();
-    }
-
+    /**
+     * @param $localeAsString
+     * @return Locale
+     */
     public static function fromString($localeAsString)
     {
-        list($prefix, $suffix) = explode('_', $localeAsString);
-        return new self($prefix, $suffix);
+        if (! preg_match('/^([a-zA-Z]{2})([\_\/])([a-zA-Z]{2})$/', $localeAsString)) {
+            throw new UnknownFormatException;
+        }
+
+        if (! preg_match('/[a-zA-z]{2}(.)[a-zA-z]{2}/', $localeAsString, $match)) {
+            throw new UnknownFormatException;
+        }
+
+        list($language, $country) = explode($match[1], $localeAsString);
+        return new self($language, $country);
     }
 
-    public static function fromCountrySlashLanguage($countrySlashLanguage)
-    {
-        list($prefix, $suffix) = explode('/', $countrySlashLanguage);
-        return new self($prefix, $suffix);
-    }
-
+    /**
+     * @param $format
+     * @return string
+     */
     public function format($format)
     {
         if (! is_string($format)) {
@@ -69,6 +110,12 @@ final class Locale
         $escNext = false;
         $formatted = '';
 
+        /*$collection = new Collection(str_split($format));
+
+        echo "<pre>";
+        var_dump($collection);
+        die("<-----");*/
+
         foreach (str_split($format) as $char) {
             if ($escNext) {
                 $formatted .= $char;
@@ -77,10 +124,7 @@ final class Locale
             }
 
             if ($translateNext) {
-
-                $translated = $this->convertTranslated($char);
-
-                $formatted .= $translated;
+                $formatted .= $this->convertByCharacter($char);
                 $translateNext = false;
                 continue;
             }
@@ -89,6 +133,7 @@ final class Locale
                 $escNext = true;
                 continue;
             }
+
             if ('%' == $char) {
                 $translateNext = true;
                 continue;
@@ -104,22 +149,26 @@ final class Locale
      * @param $char
      * @return string
      */
-    private function convertTranslated($char)
+    private function convertByCharacter($char)
     {
+        $countryCodeColleague = $this->mediator->getCountryCodeColleague();
+
         if ('c' == $char) {
-            return strtolower($this->getCountryCode());
+            return $countryCodeColleague->lowerCase()->getCountryCode();
         }
 
         if ('C' == $char) {
-            return strtoupper($this->getCountryCode());
+            return $countryCodeColleague->upperCase()->getCountryCode();
         }
 
+        $languageCodeColleague = $this->mediator->getLanguageCodeColleague();
+
         if ('l' == $char) {
-            return strtolower($this->getLanguageCode());
+            return $languageCodeColleague->lowerCase()->getLanguageCode();
         }
 
         if ('L' == $char) {
-            return strtoupper($this->getLanguageCode());
+            return $languageCodeColleague->upperCase()->getLanguageCode();
         }
 
         throw new UnknownFormatException;
