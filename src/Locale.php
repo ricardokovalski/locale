@@ -2,9 +2,8 @@
 
 namespace RicardoKovalski\Locale;
 
-use RicardoKovalski\Locale\Exceptions\FormatValueException;
 use RicardoKovalski\Locale\Exceptions\UnknownFormatException;
-use RicardoKovalski\Locale\Exceptions\UnknownTranslateFormatException;
+use RicardoKovalski\Locale\Exceptions\UnknownInputFormatException;
 use RicardoKovalski\Locale\Mediator\CountryCodeColleague;
 use RicardoKovalski\Locale\Mediator\LanguageCodeColleague;
 use RicardoKovalski\Locale\Mediator\LocaleMediator;
@@ -82,11 +81,12 @@ final class Locale
     /**
      * @param $localeAsString
      * @return Locale
+     * @throws UnknownInputFormatException
      */
     public static function fromString($localeAsString)
     {
-        if (! preg_match('/^([a-zA-Z]{2})([\/_])([a-zA-Z]{2})$/', $localeAsString)) {
-            throw new UnknownFormatException;
+        if (! is_string($localeAsString) or ! preg_match('/^([a-zA-Z]{2})([\/_])([a-zA-Z]{2})$/', $localeAsString)) {
+            throw new UnknownInputFormatException;
         }
 
         preg_match('/[a-zA-z]{2}(.)[a-zA-z]{2}/', $localeAsString, $match);
@@ -99,12 +99,12 @@ final class Locale
     /**
      * @param $format
      * @return string
-     * @throws FormatValueException
+     * @throws UnknownFormatException
      */
     public function format($format)
     {
-        if (! is_string($format) or ! preg_match('/^([\%][a-zA-Z])(([\\\]+)|([\/_-]))([\%][a-zA-Z])$/', $format)) {
-            throw new FormatValueException;
+        if (! is_string($format) or ! preg_match('/^([\%][clCL])(([\\\]+)|([\/_-]))([\%][clCL])$/', $format)) {
+            throw new UnknownFormatException;
         }
 
         $formatted = '';
@@ -124,7 +124,7 @@ final class Locale
                 continue;
             }
 
-            if (preg_match('/[a-zA-Z]/', $collection->current())) {
+            if (preg_match('/[clCL]/', $collection->current())) {
                 $formatted .= $this->convertByCharacter($collection->current());
                 $collection->next();
                 continue;
@@ -159,10 +159,6 @@ final class Locale
             return $languageCodeColleague->lowerCase()->getLanguageCode();
         }
 
-        if ('L' == $char) {
-            return $languageCodeColleague->upperCase()->getLanguageCode();
-        }
-
-        throw new UnknownTranslateFormatException;
+        return $languageCodeColleague->upperCase()->getLanguageCode();
     }
 }

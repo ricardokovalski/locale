@@ -5,29 +5,29 @@ namespace RicardoKovalski\Locale\Tests;
 use PHPUnit\Framework\TestCase;
 use RicardoKovalski\Locale\Exceptions\FormatValueException;
 use RicardoKovalski\Locale\Exceptions\UnknownFormatException;
+use RicardoKovalski\Locale\Exceptions\UnknownInputFormatException;
 use RicardoKovalski\Locale\Exceptions\UnknownTranslateFormatException;
 use RicardoKovalski\Locale\Locale;
 
 class LocaleTest extends TestCase
 {
-    public function testExpectedExceptionUnknownFormatException()
+    public function testExpectedExceptionUnknownFormatExceptionByFromString()
     {
-        $this->expectException(UnknownFormatException::class);
-
+        $this->expectException(UnknownInputFormatException::class);
         Locale::fromString('en:US');
     }
 
-    public function testExpectedExceptionFormatValueException()
+    public function testExpectedExceptionUnknownFormatExceptionByMethodFormat()
     {
         $locale = Locale::fromString('en_US');
-        $this->expectException(FormatValueException::class);
+        $this->expectException(UnknownFormatException::class);
         $locale->format('%c:%l');
     }
 
-    public function testExpectedExceptionUnknownTranslateFormatException()
+    public function testExpectedExceptionUnknownFormatExceptionWhenFormatCharInvalid()
     {
         $locale = Locale::fromString('en_US');
-        $this->expectException(UnknownTranslateFormatException::class);
+        $this->expectException(UnknownFormatException::class);
         $locale->format('%g/%l');
     }
 
