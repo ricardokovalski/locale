@@ -4,6 +4,7 @@ namespace RicardoKovalski\Locale;
 
 use RicardoKovalski\Locale\Exceptions\FormatValueException;
 use RicardoKovalski\Locale\Exceptions\UnknownFormatException;
+use RicardoKovalski\Locale\Exceptions\UnknownTranslateFormatException;
 use RicardoKovalski\Locale\Mediator\CountryCodeColleague;
 use RicardoKovalski\Locale\Mediator\LanguageCodeColleague;
 use RicardoKovalski\Locale\Mediator\LocaleMediator;
@@ -84,62 +85,55 @@ final class Locale
      */
     public static function fromString($localeAsString)
     {
-        if (! preg_match('/^([a-zA-Z]{2})([\_\/])([a-zA-Z]{2})$/', $localeAsString)) {
+        if (! preg_match('/^([a-zA-Z]{2})([\/_])([a-zA-Z]{2})$/', $localeAsString)) {
             throw new UnknownFormatException;
         }
 
-        if (! preg_match('/[a-zA-z]{2}(.)[a-zA-z]{2}/', $localeAsString, $match)) {
-            throw new UnknownFormatException;
-        }
+        preg_match('/[a-zA-z]{2}(.)[a-zA-z]{2}/', $localeAsString, $match);
 
         list($language, $country) = explode($match[1], $localeAsString);
+
         return new self($language, $country);
     }
 
     /**
      * @param $format
      * @return string
+     * @throws FormatValueException
      */
     public function format($format)
     {
-        if (! is_string($format)) {
+        if (! is_string($format) or ! preg_match('/^([\%][a-zA-Z])(([\\\]+)|([\/_-]))([\%][a-zA-Z])$/', $format)) {
             throw new FormatValueException;
         }
 
-        $translateNext = false;
-        $escNext = false;
         $formatted = '';
 
-        /*$collection = new Collection(str_split($format));
+        $collection = new Collection(str_split($format));
 
-        echo "<pre>";
-        var_dump($collection);
-        die("<-----");*/
+        $iterator = $collection->getIterator();
 
-        foreach (str_split($format) as $char) {
-            if ($escNext) {
-                $formatted .= $char;
-                $escNext = false;
+        while ($iterator->key() < $collection->count()) {
+
+            if ($iterator->current() == '\\') {
+                $formatted .= $iterator->current();
+                $iterator->next();
                 continue;
             }
 
-            if ($translateNext) {
-                $formatted .= $this->convertByCharacter($char);
-                $translateNext = false;
+            if ($iterator->current() == '%') {
+                $iterator->next();
                 continue;
             }
 
-            if ('\\' == $char) {
-                $escNext = true;
+            if (preg_match('/[a-zA-Z]/', $iterator->current())) {
+                $formatted .= $this->convertByCharacter($iterator->current());
+                $iterator->next();
                 continue;
             }
 
-            if ('%' == $char) {
-                $translateNext = true;
-                continue;
-            }
-
-            $formatted .= $char;
+            $formatted .= $iterator->current();
+            $iterator->next();
         }
 
         return $formatted;
@@ -171,6 +165,6 @@ final class Locale
             return $languageCodeColleague->upperCase()->getLanguageCode();
         }
 
-        throw new UnknownFormatException;
+        throw new UnknownTranslateFormatException;
     }
 }
