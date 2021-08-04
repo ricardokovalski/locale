@@ -4,7 +4,6 @@ namespace RicardoKovalski\Locale;
 
 use RicardoKovalski\Locale\Exceptions\FormatValueException;
 use RicardoKovalski\Locale\Exceptions\UnknownFormatException;
-use RicardoKovalski\Locale\Exceptions\UnknownTranslateFormatException;
 use RicardoKovalski\Locale\Mediator\CountryCodeColleague;
 use RicardoKovalski\Locale\Mediator\LanguageCodeColleague;
 use RicardoKovalski\Locale\Mediator\LocaleMediator;
@@ -111,29 +110,29 @@ final class Locale
 
         $collection = new Collection(str_split($format));
 
-        $iterator = $collection->getIterator();
+        //$iterator = $collection->getIterator();
 
-        while ($iterator->key() < $collection->count()) {
+        while ($collection->key() < $collection->count()) {
 
-            if ($iterator->current() == '\\') {
-                $formatted .= $iterator->current();
-                $iterator->next();
+            if ($collection->current() == '\\') {
+                $formatted .= $collection->current();
+                $collection->next();
                 continue;
             }
 
-            if ($iterator->current() == '%') {
-                $iterator->next();
+            if ($collection->current() == '%') {
+                $collection->next();
                 continue;
             }
 
-            if (preg_match('/[a-zA-Z]/', $iterator->current())) {
-                $formatted .= $this->convertByCharacter($iterator->current());
-                $iterator->next();
+            if (preg_match('/[a-zA-Z]/', $collection->current())) {
+                $formatted .= $this->convertByCharacter($collection->current());
+                $collection->next();
                 continue;
             }
 
-            $formatted .= $iterator->current();
-            $iterator->next();
+            $formatted .= $collection->current();
+            $collection->next();
         }
 
         return $formatted;
@@ -165,6 +164,6 @@ final class Locale
             return $languageCodeColleague->upperCase()->getLanguageCode();
         }
 
-        throw new UnknownTranslateFormatException;
+        //throw new UnknownTranslateFormatException;
     }
 }

@@ -3,14 +3,20 @@
 namespace RicardoKovalski\Locale;
 
 /**
- *
+ * Class Collection
+ * @package RicardoKovalski\Locale
  */
-final class Collection implements \Countable, \IteratorAggregate
+final class Collection implements \Countable, \Iterator
 {
     /**
      * @var array
      */
     private $chars = [];
+
+    /**
+     * @var int $position
+     */
+    protected $position = 0;
 
     /**
      * @param array $chars
@@ -50,10 +56,43 @@ final class Collection implements \Countable, \IteratorAggregate
     }
 
     /**
-     * @return MyIterator
+     * @inheritDoc
      */
-    public function getIterator()
+    public function current()
     {
-        return new MyIterator($this);
+        return $this->getChar($this->position);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function next()
+    {
+        $this->position++;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function key()
+    {
+        return $this->position;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function valid()
+    {
+        return $this->position < $this->count();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function rewind()
+    {
+        $this->position = 0;
     }
 }
