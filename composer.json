@@ -1,5 +1,5 @@
 {
-  "name": "ricardokovalski/locale-value-object",
+  "name": "ricardokovalski/locale",
   "description": "A simple PHP Locale Value Object",
   "type": "library",
   "authors": [
