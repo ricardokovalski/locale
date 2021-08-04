@@ -4,6 +4,7 @@ namespace RicardoKovalski\Locale;
 
 use RicardoKovalski\Locale\Exceptions\FormatValueException;
 use RicardoKovalski\Locale\Exceptions\UnknownFormatException;
+use RicardoKovalski\Locale\Exceptions\UnknownTranslateFormatException;
 use RicardoKovalski\Locale\Mediator\CountryCodeColleague;
 use RicardoKovalski\Locale\Mediator\LanguageCodeColleague;
 use RicardoKovalski\Locale\Mediator\LocaleMediator;
@@ -110,8 +111,6 @@ final class Locale
 
         $collection = new Collection(str_split($format));
 
-        //$iterator = $collection->getIterator();
-
         while ($collection->key() < $collection->count()) {
 
             if ($collection->current() == '\\') {
@@ -164,6 +163,6 @@ final class Locale
             return $languageCodeColleague->upperCase()->getLanguageCode();
         }
 
-        //throw new UnknownTranslateFormatException;
+        throw new UnknownTranslateFormatException;
     }
 }
