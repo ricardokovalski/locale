@@ -1,11 +1,7 @@
-# Locale Value Object
-
-A simple locale value object.
-
 <h1 align="center">ricardokovalski/locale</h1>
 
 <p align="center">
-    <strong>Um simples Locale Value Object.</strong>
+    <strong>Um simples objeto de valor representando o Locale.</strong>
 </p>
 
 <p align="center">
@@ -18,7 +14,7 @@ A simple locale value object.
 
 <h2>Sobre</h2>
 
-ricardokovalski/locale é um simples Locale Value Object desenvolvido em PHP.
+ricardokovalski/locale é um simples objeto de valor desenvolvido em PHP para representar o Locale.
 
 <h2>Instalação</h2>
 
