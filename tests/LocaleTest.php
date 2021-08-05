@@ -3,10 +3,8 @@
 namespace RicardoKovalski\Locale\Tests;
 
 use PHPUnit\Framework\TestCase;
-use RicardoKovalski\Locale\Exceptions\FormatValueException;
 use RicardoKovalski\Locale\Exceptions\UnknownFormatException;
 use RicardoKovalski\Locale\Exceptions\UnknownInputFormatException;
-use RicardoKovalski\Locale\Exceptions\UnknownTranslateFormatException;
 use RicardoKovalski\Locale\Locale;
 
 class LocaleTest extends TestCase
@@ -60,7 +58,7 @@ class LocaleTest extends TestCase
      * @dataProvider formatProvider
      * @param $locale
      * @param $format
-     * @param $expecte
+     * @param $expected
      */
     public function testFormat($locale, $format, $expected)
     {
@@ -78,25 +76,4 @@ class LocaleTest extends TestCase
             [Locale::fromString('en_Gb'), '%C\\\%L', 'GB\\\EN'],
         ];
     }
-
-    /*public function testFormatException($locale, $format)
-    {
-        $this->expectException(FormatValueException::class);
-        $this->assertSame($locale->format($format));
-    }*/
-
-    /*public static function formatExceptionProvider()
-    {
-        return [
-            [Locale::fromString('ru_RU'), '%S_%L'],
-            [Locale::fromString('en_us'), '%C_%r'],
-            [Locale::fromString('en_us'), '%Cr%a'],
-            [Locale::fromString('en_us'), '%c_%J'],
-            [Locale::fromString('en_us'), '%\%/%L'],
-            [Locale::fromString('en_GB'), '%\%/%L'],
-            [Locale::fromString('en_AU'), '%\%/%L'],
-            [Locale::fromString('en_us'), 123432],
-            [Locale::fromString('en_us'), ['can', 'do', 'this']]
-        ];
-    }*/
 }

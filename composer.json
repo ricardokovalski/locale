@@ -33,6 +33,6 @@
       "RicardoKovalski\\Locale\\Tests\\": "tests/"
     }
   },
-  "minimum-stability": "dev",
+  "minimum-stability": "alpha",
   "prefer-stable": true
 }
